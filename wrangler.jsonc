@@ -1,7 +1,31 @@
 {
   "name": "axcellera",
+  "main": "./worker/index.ts",
   "compatibility_date": "2026-09-29",
+  "observability": { "enabled": true },
+
+  // O Worker só roda para /api/*; todo o resto é servido direto como asset estático.
   "assets": {
-    "directory": "./dist"
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+
+  // Envio via Cloudflare Email Service. O binding só consegue enviar para o
+  // destinatário e a partir do remetente abaixo (o domínio precisa estar
+  // onboarded no Email Service e usar o DNS da Cloudflare).
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "destination_address": "contato@axcellera.com.br",
+      "allowed_sender_addresses": ["site@axcellera.com.br"]
+    }
+  ],
+
+  // Mantenha CONTACT_TO/CONTACT_FROM iguais às restrições do binding acima.
+  "vars": {
+    "CONTACT_TO": "contato@axcellera.com.br",
+    "CONTACT_FROM": "site@axcellera.com.br"
   }
+  // Secret (não fica neste arquivo): TURNSTILE_SECRET_KEY
 }

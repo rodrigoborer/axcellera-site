@@ -1,4 +1,5 @@
 import React from 'react';
+import ContactForm from './ContactForm';
 import { Menu, X, BarChart3, Rocket, Users, Brain, Mail, Phone, MapPin } from 'lucide-react';
 
 function App() {
@@ -135,26 +136,7 @@ function App() {
                 <span className="text-gray-600">São Paulo, SP - Brasil</span>
               </div>
             </div>
-            <form className="space-y-4">
-              <input
-                type="text"
-                placeholder="Nome"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-coral"
-              />
-              <input
-                type="email"
-                placeholder="Email"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-coral"
-              />
-              <textarea
-                placeholder="Mensagem"
-                rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-coral"
-              ></textarea>
-              <button className="w-full bg-coral-dark text-white px-6 py-3 rounded-md hover:bg-teal transition-colors">
-                Enviar Mensagem
-              </button>
-            </form>
+            <ContactForm />
           </div>
         </div>
       </section>
