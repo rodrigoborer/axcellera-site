@@ -98,7 +98,7 @@ function App() {
                 Somos especialistas em transformar desafios em oportunidades de crescimento. Nossa equipe combina expertise em negócios e tecnologia para entregar resultados excepcionais.
               </p>
               <p className="text-gray-600 mb-6">
-                Com anos de experiência no mercado, já ajudamos centenas de empresas a alcançarem seus objetivos estratégicos.
+                Com anos de experiência no mercado, já ajudamos dezenas de empresas a alcançarem seus objetivos estratégicos.
               </p>
               <div className="flex items-center space-x-4">
                 <Users className="text-coral w-8 h-8" />
