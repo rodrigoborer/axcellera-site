@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, X, ChevronRight, BarChart3, Rocket, Users, Brain, Mail, Phone, MapPin } from 'lucide-react';
+import { Menu, X, BarChart3, Rocket, Users, Brain, Mail, Phone, MapPin } from 'lucide-react';
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -16,11 +16,11 @@ function App() {
             
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#inicio" className="text-teal hover:text-coral">Início</a>
-              <a href="#servicos" className="text-teal hover:text-coral">Serviços</a>
-              <a href="#sobre" className="text-teal hover:text-coral">Sobre</a>
-              <a href="#contato" className="text-teal hover:text-coral">Contato</a>
-              <button className="bg-coral text-white px-6 py-2 rounded-md hover:bg-teal transition-colors">
+              <a href="#inicio" className="text-teal hover:text-coral-dark">Início</a>
+              <a href="#servicos" className="text-teal hover:text-coral-dark">Serviços</a>
+              <a href="#sobre" className="text-teal hover:text-coral-dark">Sobre</a>
+              <a href="#contato" className="text-teal hover:text-coral-dark">Contato</a>
+              <button className="bg-coral-dark text-white px-6 py-2 rounded-md hover:bg-teal transition-colors">
                 Fale Conosco
               </button>
             </div>
@@ -38,26 +38,26 @@ function App() {
         {isMenuOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              <a href="#inicio" className="block px-3 py-2 text-teal hover:text-coral">Início</a>
-              <a href="#servicos" className="block px-3 py-2 text-teal hover:text-coral">Serviços</a>
-              <a href="#sobre" className="block px-3 py-2 text-teal hover:text-coral">Sobre</a>
-              <a href="#contato" className="block px-3 py-2 text-teal hover:text-coral">Contato</a>
+              <a href="#inicio" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2 text-teal hover:text-coral-dark">Início</a>
+              <a href="#servicos" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2 text-teal hover:text-coral-dark">Serviços</a>
+              <a href="#sobre" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2 text-teal hover:text-coral-dark">Sobre</a>
+              <a href="#contato" onClick={() => setIsMenuOpen(false)} className="block px-3 py-2 text-teal hover:text-coral-dark">Contato</a>
             </div>
           </div>
         )}
       </nav>
 
       {/* Hero Section */}
-      <section id="inicio" className="pt-20 bg-gradient-to-br from-teal to-coral">
+      <section id="inicio" className="pt-20 bg-gradient-to-br from-teal to-coral-dark">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
               Transformando Negócios através da Tecnologia
             </h1>
-            <p className="text-xl text-white/90 mb-8">
+            <p className="text-xl text-white mb-8">
               Soluções estratégicas para impulsionar seu crescimento e aumentar sua participação no mercado
             </p>
-            <button className="bg-white text-teal px-8 py-3 rounded-md hover:bg-coral hover:text-white transition-colors font-semibold">
+            <button className="bg-white text-teal px-8 py-3 rounded-md hover:bg-coral-dark hover:text-white transition-colors font-semibold">
               Saiba Mais
             </button>
           </div>
@@ -124,11 +124,11 @@ function App() {
             <div>
               <div className="flex items-center mb-6">
                 <Mail className="text-coral w-6 h-6 mr-3" />
-                <span className="text-gray-600">contato@axcellera.com.br</span>
+                <a href="mailto:contato@axcellera.com.br" className="text-gray-600 hover:text-coral-dark">contato@axcellera.com.br</a>
               </div>
               <div className="flex items-center mb-6">
                 <Phone className="text-coral w-6 h-6 mr-3" />
-                <span className="text-gray-600">(11) 96000-2280</span>
+                <a href="tel:+5511960002280" className="text-gray-600 hover:text-coral-dark">(11) 96000-2280</a>
               </div>
               <div className="flex items-center">
                 <MapPin className="text-coral w-6 h-6 mr-3" />
@@ -151,7 +151,7 @@ function App() {
                 rows={4}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-coral"
               ></textarea>
-              <button className="w-full bg-coral text-white px-6 py-3 rounded-md hover:bg-teal transition-colors">
+              <button className="w-full bg-coral-dark text-white px-6 py-3 rounded-md hover:bg-teal transition-colors">
                 Enviar Mensagem
               </button>
             </form>
@@ -167,7 +167,7 @@ function App() {
               <img src="/logo.svg" alt="Logo" className="h-8 w-auto" />
             </div>
             <div className="text-center md:text-right">
-              <p>&copy; 2024 Axcellera. Todos os direitos reservados.</p>
+              <p>&copy; {new Date().getFullYear()} Axcellera. Todos os direitos reservados.</p>
             </div>
           </div>
         </div>
