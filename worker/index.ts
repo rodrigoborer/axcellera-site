@@ -10,7 +10,11 @@
 type WorkerEnv = Env & {
   /** Secret do Cloudflare Turnstile. Configurar com `wrangler secret put`. */
   TURNSTILE_SECRET_KEY?: string;
+  /** Chave de API do Brevo (dedicada ao site). Configurar com `wrangler secret put`. */
+  BREVO_API_KEY?: string;
 };
+
+const BREVO_URL = 'https://api.brevo.com/v3/smtp/email';
 
 const MAX_BODY_BYTES = 16 * 1024;
 const LIMITS = { name: 100, email: 254, message: 5000, messageMin: 10 } as const;
@@ -64,38 +68,60 @@ async function handleContact(request: Request, env: WorkerEnv, url: URL): Promis
 
   const contact = validate(payload);
 
-  if (!env.TURNSTILE_SECRET_KEY) {
-    // Falha fechada: sem o secret, a proteção antispam não existe e o formulário não deve operar.
-    console.error('contact: TURNSTILE_SECRET_KEY não configurado');
+  // Falha fechada: sem estes secrets o formulário não deve operar (nem sem antispam, nem sem envio).
+  const { TURNSTILE_SECRET_KEY: turnstileSecret, BREVO_API_KEY: brevoKey } = env;
+  if (!turnstileSecret || !brevoKey) {
+    console.error('contact: secrets ausentes', {
+      turnstile: Boolean(turnstileSecret),
+      brevo: Boolean(brevoKey),
+    });
     throw new HttpError(503, 'service_unavailable');
   }
-  await verifyTurnstile(payload.turnstileToken, env.TURNSTILE_SECRET_KEY, request);
+  await verifyTurnstile(payload.turnstileToken, turnstileSecret, request);
+  await sendViaBrevo(env, brevoKey, contact);
 
+  return json({ ok: true }, 200);
+}
+
+async function sendViaBrevo(
+  env: WorkerEnv,
+  apiKey: string,
+  contact: { name: string; email: string; message: string },
+): Promise<void> {
+  let res: Response;
   try {
-    await env.EMAIL.send({
-      from: { email: env.CONTACT_FROM, name: 'Site Axcellera' },
-      to: env.CONTACT_TO,
-      replyTo: { email: contact.email, name: contact.name },
-      subject: `Contato pelo site: ${contact.name.slice(0, 60)}`,
-      // Apenas texto: nada do que o visitante digitou é interpretado como HTML.
-      text: [
-        `Nome: ${contact.name}`,
-        `E-mail: ${contact.email}`,
-        '',
-        contact.message,
-        '',
-        '—',
-        'Enviado pelo formulário do site. Responda a este e-mail para falar com o visitante.',
-      ].join('\n'),
+    res = await fetch(BREVO_URL, {
+      method: 'POST',
+      headers: { 'api-key': apiKey, 'content-type': 'application/json', accept: 'application/json' },
+      body: JSON.stringify({
+        sender: { name: 'Site Axcellera', email: env.CONTACT_FROM },
+        to: [{ email: env.CONTACT_TO }],
+        replyTo: { email: contact.email, name: contact.name },
+        subject: `Contato pelo site: ${contact.name.slice(0, 60)}`,
+        // Apenas texto: nada do que o visitante digitou é interpretado como HTML.
+        textContent: [
+          `Nome: ${contact.name}`,
+          `E-mail: ${contact.email}`,
+          '',
+          contact.message,
+          '',
+          '—',
+          'Enviado pelo formulário do site. Responda a este e-mail para falar com o visitante.',
+        ].join('\n'),
+      }),
+      signal: AbortSignal.timeout(8000),
     });
-  } catch (err) {
-    // Registra só o código do erro, sem dados pessoais do visitante.
-    const code = err && typeof err === 'object' && 'code' in err ? String(err.code) : 'desconhecido';
-    console.error('contact: falha no envio de e-mail', code);
+  } catch {
+    console.error('contact: falha de rede ao chamar o Brevo');
     throw new HttpError(502, 'send_failed');
   }
 
-  return json({ ok: true }, 200);
+  if (!res.ok) {
+    // Registra só o status e o código de erro do Brevo, sem dados do visitante.
+    const detail = (await res.json().catch(() => ({}))) as { code?: string };
+    console.error('contact: Brevo recusou o envio', res.status, detail.code ?? 'sem_codigo');
+    throw new HttpError(502, 'send_failed');
+  }
 }
 
 interface Payload {
